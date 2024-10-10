@@ -1,0 +1,692 @@
+library(ggplot2)
+library(tidyverse)
+library(readxl)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
+library(maps)
+library(mapdata)
+library(ggsci)
+
+#Loading data and metadata
+CS_data<- read_excel("Fishnet_extract_values_ES.xlsx", sheet = "Normalized_CS", na = "")
+WY_data<- read_excel("Fishnet_extract_values_ES.xlsx", sheet = "Normalized_WY", na = "")
+HQ_data<- read_excel("Fishnet_extract_values_ES.xlsx", sheet = "Normalized_HQ", na = "")
+Factors<- read_excel("Fishnet_extract_values_ES.xlsx", sheet = "Normalized_Factors", na = "")
+LULC<- read_excel("Fishnet_extract_values_ES.xlsx", sheet = "Normalized_LULC_types", na = "")
+Coord<- read_excel("Fishnet_extract_values_ES.xlsx", sheet = "Coordinates", na = "")
+
+
+# Create a combined density plot with colors by each group
+p1<-ggplot(CS_data, aes(x = CS_2000, fill = ws_name)) +
+  geom_density(alpha = 0.3) +
+  labs(title = "",
+       x = "CS 2000",
+       y = "Density",
+       fill = "Group") +
+       xlim(0,1)+ylim(0,10)+
+  scale_fill_manual(values = c("#E53935", "#1E11E5", "#43A047", "#00AFBB","#FDD135"))+theme_minimal()
+
+# Create a combined density plot with colors by each group
+p2<-ggplot(CS_data, aes(x = CS_2010, fill = ws_name)) +
+  geom_density(alpha = 0.3) +
+  labs(title = "",
+       x = "CS 2010",
+       y = "Density",
+       fill = "Group") +
+       xlim(0,1)+ylim(0,10)+
+  scale_fill_manual(values = c("#E53935", "#1E11E5", "#43A047", "#00AFBB","#FDD135"))+theme_minimal()
+
+# Create a combined density plot with colors by each group
+p3<-ggplot(CS_data, aes(x = CS_2020, fill = ws_name)) +
+  geom_density(alpha = 0.3) +
+  labs(title = "",
+       x = "CS 2020",
+       y = "Density",
+       fill = "Group") +
+      xlim(0,1)+ylim(0,10)+
+  scale_fill_manual(values = c("#E53935", "#1E11E5", "#43A047", "#00AFBB","#FDD135"))+theme_minimal()
+
+library(ggpubr)
+CS_density<-ggarrange(p1,p2,p3, 
+                     ncol = 3, nrow = 1,common.legend = TRUE,
+                     legend = "right")
+
+# Create a combined density plot with colors by each group
+p1<-ggplot(WY_data, aes(x = WY_2000, fill = ws_name)) +
+  geom_density(alpha = 0.3) +
+  labs(title = "",
+       x = "WY 2000",
+       y = "Density",
+       fill = "Group") +
+  xlim(0,1)+ylim(0,10)+
+  scale_fill_manual(values = c("#E53935", "#1E11E5", "#43A047", "#00AFBB","#FDD135"))+theme_minimal()
+
+# Create a combined density plot with colors by each group
+p2<-ggplot(WY_data, aes(x = WY_2010, fill = ws_name)) +
+  geom_density(alpha = 0.3) +
+  labs(title = "",
+       x = "WY 2010",
+       y = "Density",
+       fill = "Group") +
+  xlim(0,1)+ylim(0,10)+
+  scale_fill_manual(values = c("#E53935", "#1E11E5", "#43A047", "#00AFBB","#FDD135"))+theme_minimal()
+
+# Create a combined density plot with colors by each group
+p3<-ggplot(WY_data, aes(x = WY_2020, fill = ws_name)) +
+  geom_density(alpha = 0.3) +
+  labs(title = "",
+       x = "WY 2020",
+       y = "Density",
+       fill = "Group") +
+  xlim(0,1)+ylim(0,10)+
+  scale_fill_manual(values = c("#E53935", "#1E11E5", "#43A047", "#00AFBB","#FDD135"))+theme_minimal()
+
+library(ggpubr)
+WY_density<-ggarrange(p1,p2,p3, 
+                      ncol = 3, nrow = 1,common.legend = TRUE,
+                      legend = "right")
+
+
+
+# Create a combined density plot with colors by each group
+p1<-ggplot(HQ_data, aes(x = HQ_2000, fill = ws_name)) +
+  geom_density(alpha = 0.3) +
+  labs(title = "",
+       x = "HQ 2000",
+       y = "Density",
+       fill = "Group") +
+  xlim(0,1)+ylim(0,10)+
+  scale_fill_manual(values = c("#E53935", "#1E11E5", "#43A047", "#00AFBB","#FDD135"))+theme_minimal()
+
+# Create a combined density plot with colors by each group
+p2<-ggplot(HQ_data, aes(x = HQ_2010, fill = ws_name)) +
+  geom_density(alpha = 0.3) +
+  labs(title = "",
+       x = "HQ 2010",
+       y = "Density",
+       fill = "Group") +
+  xlim(0,1)+ylim(0,10)+
+  scale_fill_manual(values = c("#E53935", "#1E11E5", "#43A047", "#00AFBB","#FDD135"))+theme_minimal()
+
+# Create a combined density plot with colors by each group
+p3<-ggplot(HQ_data, aes(x = HQ_2020, fill = ws_name)) +
+  geom_density(alpha = 0.3) +
+  labs(title = "",
+       x = "HQ 2020",
+       y = "Density",
+       fill = "Group") +
+  xlim(0,1)+ylim(0,10)+
+  scale_fill_manual(values = c("#E53935", "#1E11E5", "#43A047", "#00AFBB","#FDD135"))+theme_minimal()
+
+library(ggpubr)
+HQ_density<-ggarrange(p1,p2,p3, 
+                      ncol = 3, nrow = 1,common.legend = TRUE,
+                      legend = "right")
+density_pl<-ggarrange(CS_density,HQ_density,WY_density, 
+                      ncol = 1, nrow = 3,common.legend = TRUE,
+                      legend = "right")
+# Calculate percent changes
+WY_changes <- WY_data %>%
+  mutate(
+    change_2000_2010 = ((WY_2010 - WY_2000) / WY_2000) * 100,
+    change_2010_2020 = ((WY_2020 - WY_2010) / WY_2010) * 100
+  ) %>%
+  mutate(
+    trend_2000_2010 = case_when(
+      abs(change_2000_2010) < 5 ~ "Stable",
+      change_2000_2010 >= 5 ~ "Increase",
+      change_2000_2010 <= -5 ~ "Decrease"
+    ),
+    trend_2010_2020 = case_when(
+      abs(change_2010_2020) < 5 ~ "Stable",
+      change_2010_2020 >= 5 ~ "Increase",
+      change_2010_2020 <= -5 ~ "Decrease"
+    )
+  )
+
+# Summarize trends
+trend_summary <- WY_changes %>%
+  summarise(across(
+    starts_with("trend"),
+    list(
+      Stable = ~sum(. == "Stable", na.rm = TRUE),
+      Increase = ~sum(. == "Increase", na.rm = TRUE),
+      Decrease = ~sum(. == "Decrease", na.rm = TRUE),
+      NA_count = ~sum(is.na(.))
+    )
+  ))
+
+trend_summary_long <- trend_summary %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = c("period", "trend"),
+    names_pattern = "trend_(.*)_(.*)",
+    values_to = "count"
+  )
+
+
+# For 2000-2010
+data_2000_2010 <- trend_summary_long %>% 
+  filter(period == "2000_2010") %>%
+  mutate(percentage = count / sum(count) * 100)
+
+# For 2010-2020
+data_2010_2020 <- trend_summary_long %>% 
+  filter(period == "2010_2020") %>%
+  mutate(percentage = count / sum(count) * 100)
+
+data_2000_2010 <- trend_summary_long %>% 
+  filter(period == "2000_2010" | period == "2000_2010_NA") %>%
+  mutate(trend = ifelse(trend == "count", "Missing", trend)) %>%
+  mutate(percentage = count / sum(count) * 100)
+
+data_2010_2020 <- trend_summary_long %>% 
+  filter(period == "2010_2020" | period == "2010_2020_NA") %>%
+  mutate(trend = ifelse(trend == "count", "Missing", trend)) %>%
+  mutate(percentage = count / sum(count) * 100)
+
+# Create pie chart for 2000-2010
+pie_2000_2010 <- ggplot(data_2000_2010, aes(x = "", y = percentage, fill = trend)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  labs(title = "Trend Distribution 2000-2010") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), 
+            position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette = "Set3")
+# Create pie chart for 2010-2020
+pie_2010_2020 <- ggplot(data_2010_2020, aes(x = "", y = percentage, fill = trend)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  labs(title = "Trend Distribution 2010-2020") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), 
+            position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette = "Set3")
+# Display the plots
+print(pie_2000_2010)
+print(pie_2010_2020)
+
+# Merge coordinates with WY_changes
+merged_data <- Coord %>%
+  left_join(WY_changes, by = "ID")
+
+# Get East Africa map data
+east_africa <- map_data("world", region = c("Kenya", "Tanzania", "Uganda", "Rwanda", "Burundi"))
+
+# Create a function to plot for a specific time period
+plot_changes <- function(data, period) {
+  ggplot() +
+    geom_polygon(data = east_africa, aes(x = long, y = lat, group = group), 
+                 fill = "white", color = "black") +
+    geom_point(data = data, 
+               aes(x = longitude, y = latitude, 
+                   color = get(paste0("trend_", period))), 
+               size = 0.1) +
+    scale_color_manual(values = c("Increase" = "green", 
+                                  "Decrease" = "red", 
+                                  "Stable" = "blue", 
+                                  "NA" = "gray"),
+                       na.value = "gray") +
+    coord_map() +
+    theme_minimal() +
+    labs(title = paste("WY", period),
+         color = "Trend") +
+    theme(legend.position = "bottom")
+}
+
+# Plot for 2000-2010
+plot_2000_2010 <- plot_changes(merged_data, "2000_2010")
+
+# Plot for 2010-2020
+plot_2010_2020 <- plot_changes(merged_data, "2010_2020")
+
+# Arrange plots
+ggarrange(plot_2000_2010, plot_2010_2020, 
+          nrow = 1, ncol = 2, common.legend = TRUE)
+
+# Calculate percent changes
+CS_changes <- CS_data %>%
+  mutate(
+    change_2000_2010 = ((CS_2010 - CS_2000) / CS_2000) * 100,
+    change_2010_2020 = ((CS_2020 - CS_2010) / CS_2010) * 100
+  ) %>%
+  mutate(
+    trend_2000_2010 = case_when(
+      abs(change_2000_2010) < 5 ~ "Stable",
+      change_2000_2010 >= 5 ~ "Increase",
+      change_2000_2010 <= -5 ~ "Decrease"
+    ),
+    trend_2010_2020 = case_when(
+      abs(change_2010_2020) < 5 ~ "Stable",
+      change_2010_2020 >= 5 ~ "Increase",
+      change_2010_2020 <= -5 ~ "Decrease"
+    )
+  )
+
+# Summarize trends
+trend_summary <- CS_changes %>%
+  summarise(across(
+    starts_with("trend"),
+    list(
+      Stable = ~sum(. == "Stable", na.rm = TRUE),
+      Increase = ~sum(. == "Increase", na.rm = TRUE),
+      Decrease = ~sum(. == "Decrease", na.rm = TRUE),
+      NA_count = ~sum(is.na(.))
+    )
+  ))
+
+trend_summary_long <- trend_summary %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = c("period", "trend"),
+    names_pattern = "trend_(.*)_(.*)",
+    values_to = "count"
+  )
+
+
+# For 2000-2010
+data_2000_2010 <- trend_summary_long %>% 
+  filter(period == "2000_2010") %>%
+  mutate(percentage = count / sum(count) * 100)
+
+# For 2010-2020
+data_2010_2020 <- trend_summary_long %>% 
+  filter(period == "2010_2020") %>%
+  mutate(percentage = count / sum(count) * 100)
+
+data_2000_2010 <- trend_summary_long %>% 
+  filter(period == "2000_2010" | period == "2000_2010_NA") %>%
+  mutate(trend = ifelse(trend == "count", "Missing", trend)) %>%
+  mutate(percentage = count / sum(count) * 100)
+
+data_2010_2020 <- trend_summary_long %>% 
+  filter(period == "2010_2020" | period == "2010_2020_NA") %>%
+  mutate(trend = ifelse(trend == "count", "Missing", trend)) %>%
+  mutate(percentage = count / sum(count) * 100)
+
+# Create pie chart for 2000-2010
+pie_2000_2010 <- ggplot(data_2000_2010, aes(x = "", y = percentage, fill = trend)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  labs(title = "Trend Distribution 2000-2010") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), 
+            position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette = "Set3")
+# Create pie chart for 2010-2020
+pie_2010_2020 <- ggplot(data_2010_2020, aes(x = "", y = percentage, fill = trend)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  labs(title = "Trend Distribution 2010-2020") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), 
+            position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette = "Set3")
+# Display the plots
+print(pie_2000_2010)
+print(pie_2010_2020)
+
+
+
+# Merge coordinates with CS_changes
+merged_data <- Coord %>%
+  left_join(CS_changes, by = "ID")
+
+# Get East Africa map data
+east_africa <- map_data("world", region = c("Kenya", "Tanzania", "Uganda", "Rwanda", "Burundi"))
+
+# Create a function to plot for a specific time period
+plot_changes <- function(data, period) {
+  ggplot() +
+    geom_polygon(data = east_africa, aes(x = long, y = lat, group = group), 
+                 fill = "white", color = "black") +
+    geom_point(data = data, 
+               aes(x = longitude, y = latitude, 
+                   color = get(paste0("trend_", period))), 
+               size = 0.1) +
+    scale_color_manual(values = c("Increase" = "green", 
+                                  "Decrease" = "red", 
+                                  "Stable" = "blue", 
+                                  "NA" = "gray"),
+                       na.value = "gray") +
+    coord_map() +
+    theme_minimal() +
+    labs(title = paste("CS", period),
+         color = "Trend") +
+    theme(legend.position = "bottom")
+}
+
+# Plot for 2000-2010
+plot_2000_2010 <- plot_changes(merged_data, "2000_2010")
+
+# Plot for 2010-2020
+plot_2010_2020 <- plot_changes(merged_data, "2010_2020")
+
+# Arrange plots
+ggarrange(plot_2000_2010, plot_2010_2020, 
+          nrow = 1, ncol = 2, common.legend = TRUE)
+
+
+
+
+
+
+# Calculate percent changes
+HQ_changes <- HQ_data %>%
+  mutate(
+    change_2000_2010 = ((HQ_2010 - HQ_2000) / HQ_2000) * 100,
+    change_2010_2020 = ((HQ_2020 - HQ_2010) / HQ_2010) * 100
+  ) %>%
+  mutate(
+    trend_2000_2010 = case_when(
+      abs(change_2000_2010) < 5 ~ "Stable",
+      change_2000_2010 >= 5 ~ "Increase",
+      change_2000_2010 <= -5 ~ "Decrease"
+    ),
+    trend_2010_2020 = case_when(
+      abs(change_2010_2020) < 5 ~ "Stable",
+      change_2010_2020 >= 5 ~ "Increase",
+      change_2010_2020 <= -5 ~ "Decrease"
+    )
+  )
+
+# Summarize trends
+trend_summary <- HQ_changes %>%
+  summarise(across(
+    starts_with("trend"),
+    list(
+      Stable = ~sum(. == "Stable", na.rm = TRUE),
+      Increase = ~sum(. == "Increase", na.rm = TRUE),
+      Decrease = ~sum(. == "Decrease", na.rm = TRUE),
+      NA_count = ~sum(is.na(.))
+    )
+  ))
+
+trend_summary_long <- trend_summary %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = c("period", "trend"),
+    names_pattern = "trend_(.*)_(.*)",
+    values_to = "count"
+  )
+
+
+# For 2000-2010
+data_2000_2010 <- trend_summary_long %>% 
+  filter(period == "2000_2010") %>%
+  mutate(percentage = count / sum(count) * 100)
+
+# For 2010-2020
+data_2010_2020 <- trend_summary_long %>% 
+  filter(period == "2010_2020") %>%
+  mutate(percentage = count / sum(count) * 100)
+
+data_2000_2010 <- trend_summary_long %>% 
+  filter(period == "2000_2010" | period == "2000_2010_NA") %>%
+  mutate(trend = ifelse(trend == "count", "Missing", trend)) %>%
+  mutate(percentage = count / sum(count) * 100)
+
+data_2010_2020 <- trend_summary_long %>% 
+  filter(period == "2010_2020" | period == "2010_2020_NA") %>%
+  mutate(trend = ifelse(trend == "count", "Missing", trend)) %>%
+  mutate(percentage = count / sum(count) * 100)
+
+# Create pie chart for 2000-2010
+pie_2000_2010 <- ggplot(data_2000_2010, aes(x = "", y = percentage, fill = trend)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  labs(title = "Trend Distribution 2000-2010") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), 
+            position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette = "Set3")
+# Create pie chart for 2010-2020
+pie_2010_2020 <- ggplot(data_2010_2020, aes(x = "", y = percentage, fill = trend)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  theme_void() +
+  labs(title = "Trend Distribution 2010-2020") +
+  geom_text(aes(label = paste0(round(percentage, 1), "%")), 
+            position = position_stack(vjust = 0.5)) +
+  scale_fill_brewer(palette = "Set3")
+# Display the plots
+print(pie_2000_2010)
+print(pie_2010_2020)
+
+
+
+
+
+
+# Merge coordinates with HQ_changes
+merged_data <- Coord %>%
+  left_join(HQ_changes, by = "ID")
+
+# Get East Africa map data
+east_africa <- map_data("world", region = c("Kenya", "Tanzania", "Uganda", "Rwanda", "Burundi"))
+
+# Create a function to plot for a specific time period
+plot_changes <- function(data, period) {
+  ggplot() +
+    geom_polygon(data = east_africa, aes(x = long, y = lat, group = group), 
+                 fill = "white", color = "black") +
+    geom_point(data = data, 
+               aes(x = longitude, y = latitude, 
+                   color = get(paste0("trend_", period))), 
+               size = 0.1) +
+    scale_color_manual(values = c("Increase" = "green", 
+                                  "Decrease" = "red", 
+                                  "Stable" = "blue", 
+                                  "NA" = "gray"),
+                       na.value = "gray") +
+    coord_map() +
+    theme_minimal() +
+    labs(title = paste("HQ", period),
+         color = "Trend") +
+    theme(legend.position = "bottom")
+}
+
+# Plot for 2000-2010
+plot_2000_2010 <- plot_changes(merged_data, "2000_2010")
+
+# Plot for 2010-2020
+plot_2010_2020 <- plot_changes(merged_data, "2010_2020")
+
+# Arrange plots
+ggarrange(plot_2000_2010, plot_2010_2020, 
+          nrow = 1, ncol = 2, common.legend = TRUE)
+
+# Random forest model
+# Define predictor groups
+lucc_vars <- c("Cropland", "Forestland", "Grassland", "Water", "Urban", "Barren")
+climate_vars <- c("tmp", "pre")
+socioeconomic_vars <- c("PD", "Pop")
+topographic_vars <- c("Slope", "DEM")
+proximity_vars <- c("Dist_to_cities", "Dist_to_railway", "Dist_to_rivers", "Dist_to_road")
+soil_vars <- "Soil_types"
+all_predictors <- c(lucc_vars, climate_vars, socioeconomic_vars, topographic_vars, proximity_vars, soil_vars)
+# Function to create and evaluate random forest model
+
+
+WY_combined_data <- WY_data %>%
+  left_join(Factors, by = c("ID", "ws_id", "ws_name")) %>%
+  left_join(LULC, by = "ID")
+
+CS_combined_data <- CS_data %>%
+  left_join(Factors, by = c("ID", "ws_id", "ws_name")) %>%
+  left_join(LULC, by = "ID")
+
+HQ_combined_data <- HQ_data %>%
+  left_join(Factors, by = c("ID", "ws_id", "ws_name")) %>%
+  left_join(LULC, by = "ID")
+
+library(randomForest)
+library(dplyr)
+library(ggplot2)
+library(ggpubr)
+
+# Define predictor groups
+lucc_vars <- c("Cropland", "Forestland", "Grassland", "Water", "Urban", "Barren")
+climate_vars <- c("tmp", "pre")
+socioeconomic_vars <- c("PD", "Pop")
+topographic_vars <- c("Slope", "DEM")
+proximity_vars <- c("Dist_to_cities", "Dist_to_railway", "Dist_to_rivers", "Dist_to_road")
+soil_vars <- "Soil_types"
+all_predictors <- c(lucc_vars, climate_vars, socioeconomic_vars, topographic_vars, proximity_vars, soil_vars)
+
+# Function to create and evaluate random forest model
+create_rf_model <- function(data, response_var, predictors) {
+  formula <- as.formula(paste(response_var, "~", paste(predictors, collapse = " + ")))
+  
+  # Split data into training and testing sets
+  set.seed(123)
+  train_indices <- sample(1:nrow(data), 0.7 * nrow(data))
+  train_data <- data[train_indices, ]
+  test_data <- data[-train_indices, ]
+  
+  # Create random forest model
+  rf_model <- randomForest(formula, data = train_data, ntree = 500, importance = TRUE)
+  
+  # Calculate overall metrics
+  train_predictions <- predict(rf_model, newdata = train_data)
+  test_predictions <- predict(rf_model, newdata = test_data)
+  
+  all_predictions <- c(train_predictions, test_predictions)
+  all_observed <- c(train_data[[response_var]], test_data[[response_var]])
+  
+  overall_mse <- mean((all_observed - all_predictions)^2)
+  overall_r_squared <- 1 - (sum((all_observed - all_predictions)^2) / 
+                              sum((all_observed - mean(all_observed))^2))
+  
+  # Return results
+  list(model = rf_model, 
+       data = data.frame(
+         Observed = all_observed, 
+         Predicted = all_predictions,
+         Set = factor(c(rep("Training", nrow(train_data)), rep("Testing", nrow(test_data))))
+       ),
+       overall_mse = overall_mse, 
+       overall_r_squared = overall_r_squared,
+       n_train = nrow(train_data),
+       n_test = nrow(test_data))
+}
+
+# Create models for each ecosystem service and year
+wy_2000_model <- create_rf_model(WY_combined_data, "WY_2000", all_predictors)
+wy_2010_model <- create_rf_model(WY_combined_data, "WY_2010", all_predictors)
+wy_2020_model <- create_rf_model(WY_combined_data, "WY_2020", all_predictors)
+
+cs_2000_model <- create_rf_model(CS_combined_data, "CS_2000", all_predictors)
+cs_2010_model <- create_rf_model(CS_combined_data, "CS_2010", all_predictors)
+cs_2020_model <- create_rf_model(CS_combined_data, "CS_2020", all_predictors)
+
+hq_2000_model <- create_rf_model(HQ_combined_data, "HQ_2000", all_predictors)
+hq_2010_model <- create_rf_model(HQ_combined_data, "HQ_2010", all_predictors)
+hq_2020_model <- create_rf_model(HQ_combined_data, "HQ_2020", all_predictors)
+
+# Function to create scatter plot
+create_scatter_plot <- function(model, title) {
+  ggplot(model$data, aes(x = Observed, y = Predicted, color = Set)) +
+    geom_point(alpha = 0.5) +
+    geom_abline(intercept = 0, slope = 1, color = "red", linetype = "dashed") +
+    labs(title = title,
+         x = "Observed",
+         y = "Predicted") +
+    annotate("text", x = Inf, y = -Inf, hjust = 1, vjust = 0, 
+             label = sprintf("R² = %.3f\nMSE = %.3f\nN(train) = %d\nN(test) = %d", 
+                             model$overall_r_squared, model$overall_mse, 
+                             model$n_train, model$n_test)) +
+    theme_minimal() +
+    theme(legend.position = "bottom") +
+    coord_fixed(ratio = 1)
+}
+
+# Create plots for each model
+plot_wy_2000 <- create_scatter_plot(wy_2000_model, "Water Yield 2000")
+plot_wy_2010 <- create_scatter_plot(wy_2010_model, "Water Yield 2010")
+plot_wy_2020 <- create_scatter_plot(wy_2020_model, "Water Yield 2020")
+plot_cs_2000 <- create_scatter_plot(cs_2000_model, "Carbon Sequestration 2000")
+plot_cs_2010 <- create_scatter_plot(cs_2010_model, "Carbon Sequestration 2010")
+plot_cs_2020 <- create_scatter_plot(cs_2020_model, "Carbon Sequestration 2020")
+plot_hq_2000 <- create_scatter_plot(hq_2000_model, "Habitat Quality 2000")
+plot_hq_2010 <- create_scatter_plot(hq_2010_model, "Habitat Quality 2010")
+plot_hq_2020 <- create_scatter_plot(hq_2020_model, "Habitat Quality 2020")
+
+# Arrange all plots in one figure
+all_plots <- ggarrange(
+  plot_wy_2000, plot_wy_2010, plot_wy_2020,
+  plot_cs_2000, plot_cs_2010, plot_cs_2020,
+  plot_hq_2000, plot_hq_2010, plot_hq_2020,
+  ncol = 3, nrow = 3,
+  common.legend = TRUE, legend = "bottom"
+)
+
+# Add overall title
+final_plot <- annotate_figure(all_plots, 
+                              top = text_grob("Observed vs Predicted for Ecosystem Services", 
+                                              face = "bold", size = 14))
+
+# Display the final plot
+print(final_plot)
+
+
+create_importance_plot <- function(model, title) {
+  importance_df <- as.data.frame(importance(model$model))
+  importance_df$Variable <- rownames(importance_df)
+  
+  importance_df$Category <- case_when(
+    importance_df$Variable %in% lucc_vars ~ "LUCC",
+    importance_df$Variable %in% climate_vars ~ "Climate",
+    importance_df$Variable %in% socioeconomic_vars ~ "Socioeconomic",
+    importance_df$Variable %in% topographic_vars ~ "Topographic",
+    importance_df$Variable %in% proximity_vars ~ "Proximity",
+    importance_df$Variable %in% soil_vars ~ "Soil",
+    TRUE ~ "Other"
+  )
+  
+  ggplot(importance_df, aes(x = reorder(Variable, IncNodePurity), y = IncNodePurity, fill = Category)) +
+    geom_bar(stat = "identity") +
+    coord_flip() +
+    labs(title = title, x = "Variable", y = "Importance (IncNodePurity)") +
+    theme_minimal() +
+    theme(legend.position = "right")+scale_fill_npg()
+}
+
+# Create models for each ecosystem service and year
+wy_2000_model <- create_rf_model(WY_combined_data, "WY_2000", all_predictors)
+wy_2010_model <- create_rf_model(WY_combined_data, "WY_2010", all_predictors)
+wy_2020_model <- create_rf_model(WY_combined_data, "WY_2020", all_predictors)
+
+cs_2000_model <- create_rf_model(CS_combined_data, "CS_2000", all_predictors)
+cs_2010_model <- create_rf_model(CS_combined_data, "CS_2010", all_predictors)
+cs_2020_model <- create_rf_model(CS_combined_data, "CS_2020", all_predictors)
+
+hq_2000_model <- create_rf_model(HQ_combined_data, "HQ_2000", all_predictors)
+hq_2010_model <- create_rf_model(HQ_combined_data, "HQ_2010", all_predictors)
+hq_2020_model <- create_rf_model(HQ_combined_data, "HQ_2020", all_predictors)
+
+# List of all models
+models <- list(
+  wy_2000 = wy_2000_model, wy_2010 = wy_2010_model, wy_2020 = wy_2020_model,
+  cs_2000 = cs_2000_model, cs_2010 = cs_2010_model, cs_2020 = cs_2020_model,
+  hq_2000 = hq_2000_model, hq_2010 = hq_2010_model, hq_2020 = hq_2020_model
+)
+
+# Create importance plots for all models
+imp_plots <- lapply(names(models), function(name) {
+  create_importance_plot(models[[name]], name)
+})
+
+# Combine all plots into one figure
+all_imp_plots <- ggarrange(plotlist = imp_plots,
+                           ncol = 3, nrow = 3,
+                           common.legend = TRUE, legend = "bottom")
+
+# Add overall title
+final_imp_plot <- annotate_figure(all_imp_plots, 
+                                  top = text_grob("Variable Importance for All Models", 
+                                                  face = "bold", size = 14))+scale_fill_npg()
+
+final_imp_plot
